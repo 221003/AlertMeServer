@@ -1,5 +1,6 @@
 package com.example.alertme.api.controllers;
 
+import com.example.alertme.api.exceptions.UserNotFoundException;
 import com.example.alertme.api.models.User;
 import com.example.alertme.api.models.UserModelAssembler;
 import com.example.alertme.api.repositories.UserRepository;
@@ -12,9 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/users")
@@ -34,23 +32,26 @@ public class UserController {
     ResponseEntity<EntityModel<User>> newUser(@RequestBody User newUser) {
 
         newUser.setPassword_hash(passwordEncoder.encode(newUser.getPassword_hash()));
-        User customer = repository.save(newUser);
+        User user = repository.save(newUser);
 
+        EntityModel<User> entityModel = assembler.toModel(user);
         return ResponseEntity
-                .created(linkTo(methodOn(UserController.class)).toUri()) //
-                .body(assembler.toModel(customer));
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(assembler.toModel(user));
     }
 
 
     @PostMapping("/login")
     ResponseEntity<EntityModel<User>> login(@RequestBody LoginForm loginForm) {
-        User customer = repository.findOneByLoginOrEmail(loginForm.getLogin(), loginForm.getLogin());
+        User user = repository
+                .findOneByLoginOrEmail(loginForm.getLogin(), loginForm.getLogin())
+                .orElseThrow(() -> new UserNotFoundException(loginForm.getLogin()));
 
-        if(!passwordEncoder.matches(loginForm.getPassword(), customer.getPassword_hash())) {
+        if(!passwordEncoder.matches(loginForm.getPassword(), user.getPassword_hash())) {
             return ResponseEntity.badRequest().body(null);
         }
 
-        EntityModel<User> entityModel = assembler.toModel(customer);
+        EntityModel<User> entityModel = assembler.toModel(user);
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
