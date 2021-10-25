@@ -23,6 +23,7 @@ public abstract class DatabaseConfig {
 
 
 @Configuration
+@Profile("prod")
 class HerokuDatabaseConfig extends DatabaseConfig {
 
     @Value("${spring.datasource.url}")
