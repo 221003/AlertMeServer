@@ -1,86 +1,88 @@
 package com.example.alertme.api.controllers;
 
+import com.example.alertme.api.ErrorResponse;
+import com.example.alertme.api.Response;
+import com.example.alertme.api.SuccessResponse;
 import com.example.alertme.api.exceptions.UserNotFoundException;
+import com.example.alertme.api.exceptions.WrongPasswordException;
 import com.example.alertme.api.models.User;
 import com.example.alertme.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     private final UserRepository repository;
-    private final UserModelAssembler assembler;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserController(UserRepository repository, UserModelAssembler assembler) {
+    public UserController(UserRepository repository) {
         this.repository = repository;
-        this.assembler = assembler;
     }
 
     @GetMapping("")
-    CollectionModel<EntityModel<User>> all() {
-        List<EntityModel<User>> user = repository.findAll()
-                .stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
+    ResponseEntity<Response> all() {
+        try {
+            List<User> users = repository.findAll();
 
-        return CollectionModel.of(
-                user,
-                linkTo(methodOn(UserController.class).all()).withSelfRel()
-        );
+            return ResponseEntity.ok(new SuccessResponse(users));
+        } catch (Exception th) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<EntityModel<User>> one(@PathVariable Long id) {
-        User customer = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id.toString()));
+    ResponseEntity<Response> one(@PathVariable Long id) {
+        try {
+            User user = repository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException(id.toString()));
 
-        EntityModel<User> entityModel = assembler.toModel(customer);
-        return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(entityModel);
+            return ResponseEntity.ok(new SuccessResponse(user));
+        } catch (UserNotFoundException th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
+        } catch (Exception th) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @PostMapping("")
-    ResponseEntity<EntityModel<User>> newUser(@RequestBody User newUser) {
+    ResponseEntity<Response> newUser(@RequestBody User newUser) {
+        try {
+            newUser.setPassword_hash(passwordEncoder.encode(newUser.getPassword_hash()));
+            User user = repository.save(newUser);
 
-        newUser.setPassword_hash(passwordEncoder.encode(newUser.getPassword_hash()));
-        User user = repository.save(newUser);
-
-        EntityModel<User> entityModel = assembler.toModel(user);
-        return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
-                .body(entityModel);
+            return ResponseEntity.ok(new SuccessResponse(user));
+        } catch (Exception th) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
 
     @PostMapping("/login")
-    ResponseEntity<EntityModel<User>> login(@RequestBody LoginForm loginForm) {
-        User user = repository
-                .findOneByLoginOrEmail(loginForm.getLogin(), loginForm.getLogin())
-                .orElseThrow(() -> new UserNotFoundException(loginForm.getLogin()));
+    ResponseEntity<Response> login(@RequestBody LoginForm loginForm) {
+        try {
+            User user = repository
+                    .findOneByLoginOrEmail(loginForm.getLogin(), loginForm.getLogin())
+                    .orElseThrow(() -> new UserNotFoundException(loginForm.getLogin()));
 
-        if(!passwordEncoder.matches(loginForm.getPassword(), user.getPassword_hash())) {
+            if(!passwordEncoder.matches(loginForm.getPassword(), user.getPassword_hash())) {
+                throw new WrongPasswordException();
+            }
+
+            return ResponseEntity.ok(new SuccessResponse(user));
+        } catch (UserNotFoundException th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
+        } catch (WrongPasswordException th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
+        } catch (Exception th) {
             return ResponseEntity.badRequest().body(null);
         }
-
-        EntityModel<User> entityModel = assembler.toModel(user);
-        return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(entityModel);
     }
 }

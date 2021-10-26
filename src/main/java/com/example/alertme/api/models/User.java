@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name="\"User\"")
+@Table(name="\"AppUsers\"")
 public class User {
     private @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
