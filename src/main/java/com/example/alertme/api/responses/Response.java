@@ -1,4 +1,4 @@
-package com.example.alertme.api;
+package com.example.alertme.api.responses;
 
 public class Response {
     private String status;
