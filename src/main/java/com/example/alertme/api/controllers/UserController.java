@@ -1,8 +1,10 @@
 package com.example.alertme.api.controllers;
 
-import com.example.alertme.api.ErrorResponse;
-import com.example.alertme.api.Response;
-import com.example.alertme.api.SuccessResponse;
+import com.example.alertme.api.requests.LoginRequestBody;
+import com.example.alertme.api.requests.NewUserRequestBody;
+import com.example.alertme.api.responses.ErrorResponse;
+import com.example.alertme.api.responses.Response;
+import com.example.alertme.api.responses.SuccessResponse;
 import com.example.alertme.api.exceptions.UserNotFoundException;
 import com.example.alertme.api.exceptions.WrongPasswordException;
 import com.example.alertme.api.models.User;
@@ -53,10 +55,13 @@ public class UserController {
     }
 
     @PostMapping("")
-    ResponseEntity<Response> newUser(@RequestBody User newUser) {
+    ResponseEntity<Response> newUser(@RequestBody NewUserRequestBody newUser) {
         try {
-            newUser.setPassword_hash(passwordEncoder.encode(newUser.getPassword_hash()));
-            User user = repository.save(newUser);
+
+            User user = new User();
+            user.setFromRequestBody(newUser);
+            user.setPassword_hash(passwordEncoder.encode(newUser.getPassword()));
+            repository.save(user);
 
             return ResponseEntity.ok(new SuccessResponse(user));
         } catch (Exception th) {
@@ -64,15 +69,34 @@ public class UserController {
         }
     }
 
+    @PutMapping("/{id}")
+    ResponseEntity<Response> update(@RequestBody NewUserRequestBody newUser, @PathVariable Long id) {
+        try {
+            User updatedUser = repository.findById(id)
+                    .map(user -> {
+                        user.setFromRequestBody(newUser);
+                        return repository.save(user);
+                    })
+                    .orElseThrow(() -> new UserNotFoundException(id.toString()));
+
+            return ResponseEntity.ok(new SuccessResponse(updatedUser));
+        } catch (UserNotFoundException th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
+        } catch (Exception th) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+
 
     @PostMapping("/login")
-    ResponseEntity<Response> login(@RequestBody LoginForm loginForm) {
+    ResponseEntity<Response> login(@RequestBody LoginRequestBody loginRequestBody) {
         try {
             User user = repository
-                    .findOneByLoginOrEmail(loginForm.getLogin(), loginForm.getLogin())
-                    .orElseThrow(() -> new UserNotFoundException(loginForm.getLogin()));
+                    .findOneByLoginOrEmail(loginRequestBody.getLogin(), loginRequestBody.getLogin())
+                    .orElseThrow(() -> new UserNotFoundException(loginRequestBody.getLogin()));
 
-            if(!passwordEncoder.matches(loginForm.getPassword(), user.getPassword_hash())) {
+            if(!passwordEncoder.matches(loginRequestBody.getPassword(), user.getPassword_hash())) {
                 throw new WrongPasswordException();
             }
 
