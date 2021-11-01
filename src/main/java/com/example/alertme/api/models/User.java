@@ -1,6 +1,12 @@
 package com.example.alertme.api.models;
 
+import com.example.alertme.api.requests.NewAlertTypeRequestBody;
+import com.example.alertme.api.requests.NewUserRequestBody;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -15,34 +21,21 @@ public class User {
     private String password_hash;
     private String email;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("user")
+    private List<Alert> alerts;
+
     public User() {
     }
 
-    public User(Long id, String first_name, String last_name, String login, String password_hash, String email) {
+    public User(Long id, String first_name, String last_name, String login, String password_hash, String email, List<Alert> alerts) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.login = login;
         this.password_hash = password_hash;
         this.email = email;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(first_name, user.first_name) &&
-                Objects.equals(last_name, user.last_name) &&
-                Objects.equals(login, user.login) &&
-                Objects.equals(password_hash, user.password_hash) &&
-                Objects.equals(email, user.email);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, first_name, last_name, login, password_hash, email);
+        this.alerts = alerts;
     }
 
     public Long getId() {
@@ -93,6 +86,27 @@ public class User {
         this.email = email;
     }
 
+    public List<Alert> getAlerts() {
+        return alerts;
+    }
+
+    public void setAlerts(List<Alert> alerts) {
+        this.alerts = alerts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) && Objects.equals(first_name, user.first_name) && Objects.equals(last_name, user.last_name) && Objects.equals(login, user.login) && Objects.equals(password_hash, user.password_hash) && Objects.equals(email, user.email) && Objects.equals(alerts, user.alerts);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, first_name, last_name, login, password_hash, email, alerts);
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -102,6 +116,14 @@ public class User {
                 ", login='" + login + '\'' +
                 ", password_hash='" + password_hash + '\'' +
                 ", email='" + email + '\'' +
+                ", alerts=" + alerts +
                 '}';
+    }
+
+    public void setFromRequestBody(NewUserRequestBody newUser) {
+        this.setLast_name(newUser.getLast_name());
+        this.setFirst_name(newUser.getFirst_name());
+        this.setLogin(newUser.getLogin());
+        this.setEmail(newUser.getEmail());
     }
 }
