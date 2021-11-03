@@ -32,13 +32,13 @@ public class Alert {
     private String title;
     private String description;
     private int number_of_votes;
-    private int coordinate_x;
-    private int coordinate_y;
+    private int latitude;
+    private int longitude;
 
     public Alert() {
     }
 
-    public Alert(Long id, User user, Date expire_date, AlertType alertType, String title, String description, int number_of_votes, int coordinate_x, int coordinate_y) {
+    public Alert(Long id, User user, Date expire_date, AlertType alertType, String title, String description, int number_of_votes, int latitude, int longitude) {
         this.id = id;
         this.user = user;
         this.expire_date = expire_date;
@@ -46,8 +46,8 @@ public class Alert {
         this.title = title;
         this.description = description;
         this.number_of_votes = number_of_votes;
-        this.coordinate_x = coordinate_x;
-        this.coordinate_y = coordinate_y;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Long getId() {
@@ -106,20 +106,20 @@ public class Alert {
         this.number_of_votes = number_of_votes;
     }
 
-    public int getCoordinate_x() {
-        return coordinate_x;
+    public int getLatitude() {
+        return latitude;
     }
 
-    public void setCoordinate_x(int coordinate_x) {
-        this.coordinate_x = coordinate_x;
+    public void setLatitude(int latitude) {
+        this.latitude = latitude;
     }
 
-    public int getCoordinate_y() {
-        return coordinate_y;
+    public int getLongitude() {
+        return longitude;
     }
 
-    public void setCoordinate_y(int coordinate_y) {
-        this.coordinate_y = coordinate_y;
+    public void setLongitude(int longitude) {
+        this.longitude = longitude;
     }
 
     @Override
@@ -127,12 +127,12 @@ public class Alert {
         if (this == o) return true;
         if (!(o instanceof Alert)) return false;
         Alert alert = (Alert) o;
-        return number_of_votes == alert.number_of_votes && coordinate_x == alert.coordinate_x && coordinate_y == alert.coordinate_y && Objects.equals(id, alert.id) && Objects.equals(user, alert.user) && Objects.equals(expire_date, alert.expire_date) && Objects.equals(alertType, alert.alertType) && Objects.equals(title, alert.title) && Objects.equals(description, alert.description);
+        return number_of_votes == alert.number_of_votes && latitude == alert.latitude && longitude == alert.longitude && Objects.equals(id, alert.id) && Objects.equals(user, alert.user) && Objects.equals(expire_date, alert.expire_date) && Objects.equals(alertType, alert.alertType) && Objects.equals(title, alert.title) && Objects.equals(description, alert.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, expire_date, alertType, title, description, number_of_votes, coordinate_x, coordinate_y);
+        return Objects.hash(id, user, expire_date, alertType, title, description, number_of_votes, latitude, longitude);
     }
 
     @Override
@@ -145,16 +145,16 @@ public class Alert {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", number_of_votes=" + number_of_votes +
-                ", coordinate_x=" + coordinate_x +
-                ", coordinate_y=" + coordinate_y +
+                ", coordinate_x=" + latitude +
+                ", coordinate_y=" + longitude +
                 '}';
     }
 
     public void setFromRequestBody(UserRepository userRepository, AlertTypeRepository alertTypeRepository, NewAlertRequestBody newAlert) throws UserNotFoundException, AlertTypeNotFoundException {
         this.setTitle(newAlert.getTitle());
         this.setDescription(newAlert.getDescription());
-        this.setCoordinate_x(newAlert.getCoordinate_x());
-        this.setCoordinate_y(newAlert.getCoordinate_y());
+        this.setLatitude(newAlert.getLatitude());
+        this.setLongitude(newAlert.getLongitude());
         this.setExpire_date(newAlert.getExpire_date());
         this.setNumber_of_votes(newAlert.getNumber_of_votes());
 

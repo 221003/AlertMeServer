@@ -11,8 +11,8 @@ public class NewAlertRequestBody {
     private String title;
     private String description;
     private int number_of_votes;
-    private int coordinate_x;
-    private int coordinate_y;
+    private int latitude;
+    private int longitude;
 
     @Temporal(TemporalType.DATE)
     private Date expire_date;
@@ -20,14 +20,14 @@ public class NewAlertRequestBody {
     public NewAlertRequestBody() {
     }
 
-    public NewAlertRequestBody(Long userId, Long alertTypeId, String title, String description, int number_of_votes, int coordinate_x, int coordinate_y, Date expire_date) {
+    public NewAlertRequestBody(Long userId, Long alertTypeId, String title, String description, int number_of_votes, int latitude, int longitude, Date expire_date) {
         this.userId = userId;
         this.alertTypeId = alertTypeId;
         this.title = title;
         this.description = description;
         this.number_of_votes = number_of_votes;
-        this.coordinate_x = coordinate_x;
-        this.coordinate_y = coordinate_y;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.expire_date = expire_date;
     }
 
@@ -71,20 +71,20 @@ public class NewAlertRequestBody {
         this.number_of_votes = number_of_votes;
     }
 
-    public int getCoordinate_x() {
-        return coordinate_x;
+    public int getLatitude() {
+        return latitude;
     }
 
-    public void setCoordinate_x(int coordinate_x) {
-        this.coordinate_x = coordinate_x;
+    public void setLatitude(int latitude) {
+        this.latitude = latitude;
     }
 
-    public int getCoordinate_y() {
-        return coordinate_y;
+    public int getLongitude() {
+        return longitude;
     }
 
-    public void setCoordinate_y(int coordinate_y) {
-        this.coordinate_y = coordinate_y;
+    public void setLongitude(int longitude) {
+        this.longitude = longitude;
     }
 
     public Date getExpire_date() {
@@ -100,12 +100,12 @@ public class NewAlertRequestBody {
         if (this == o) return true;
         if (!(o instanceof NewAlertRequestBody)) return false;
         NewAlertRequestBody that = (NewAlertRequestBody) o;
-        return number_of_votes == that.number_of_votes && coordinate_x == that.coordinate_x && coordinate_y == that.coordinate_y && Objects.equals(userId, that.userId) && Objects.equals(alertTypeId, that.alertTypeId) && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(expire_date, that.expire_date);
+        return number_of_votes == that.number_of_votes && latitude == that.latitude && longitude == that.longitude && Objects.equals(userId, that.userId) && Objects.equals(alertTypeId, that.alertTypeId) && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(expire_date, that.expire_date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, alertTypeId, title, description, number_of_votes, coordinate_x, coordinate_y, expire_date);
+        return Objects.hash(userId, alertTypeId, title, description, number_of_votes, latitude, longitude, expire_date);
     }
 
     @Override
@@ -116,8 +116,8 @@ public class NewAlertRequestBody {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", number_of_votes=" + number_of_votes +
-                ", coordinate_x=" + coordinate_x +
-                ", coordinate_y=" + coordinate_y +
+                ", coordinate_x=" + latitude +
+                ", coordinate_y=" + longitude +
                 ", expire_date=" + expire_date +
                 '}';
     }
