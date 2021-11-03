@@ -8,6 +8,7 @@ import com.example.alertme.api.requests.NewAlertRequestBody;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
@@ -35,10 +36,13 @@ public class Alert {
     private int latitude;
     private int longitude;
 
+    @Lob
+    private byte[] image;
+
     public Alert() {
     }
 
-    public Alert(Long id, User user, Date expire_date, AlertType alertType, String title, String description, int number_of_votes, int latitude, int longitude) {
+    public Alert(Long id, User user, Date expire_date, AlertType alertType, String title, String description, int number_of_votes, int latitude, int longitude, byte[] image) {
         this.id = id;
         this.user = user;
         this.expire_date = expire_date;
@@ -48,6 +52,7 @@ public class Alert {
         this.number_of_votes = number_of_votes;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.image = image;
     }
 
     public Long getId() {
@@ -122,17 +127,27 @@ public class Alert {
         this.longitude = longitude;
     }
 
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Alert)) return false;
         Alert alert = (Alert) o;
-        return number_of_votes == alert.number_of_votes && latitude == alert.latitude && longitude == alert.longitude && Objects.equals(id, alert.id) && Objects.equals(user, alert.user) && Objects.equals(expire_date, alert.expire_date) && Objects.equals(alertType, alert.alertType) && Objects.equals(title, alert.title) && Objects.equals(description, alert.description);
+        return number_of_votes == alert.number_of_votes && latitude == alert.latitude && longitude == alert.longitude && Objects.equals(id, alert.id) && Objects.equals(user, alert.user) && Objects.equals(expire_date, alert.expire_date) && Objects.equals(alertType, alert.alertType) && Objects.equals(title, alert.title) && Objects.equals(description, alert.description) && Arrays.equals(image, alert.image);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, expire_date, alertType, title, description, number_of_votes, latitude, longitude);
+        int result = Objects.hash(id, user, expire_date, alertType, title, description, number_of_votes, latitude, longitude);
+        result = 31 * result + Arrays.hashCode(image);
+        return result;
     }
 
     @Override
@@ -145,8 +160,9 @@ public class Alert {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", number_of_votes=" + number_of_votes +
-                ", coordinate_x=" + latitude +
-                ", coordinate_y=" + longitude +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", image=" + Arrays.toString(image) +
                 '}';
     }
 
@@ -157,15 +173,16 @@ public class Alert {
         this.setLongitude(newAlert.getLongitude());
         this.setExpire_date(newAlert.getExpire_date());
         this.setNumber_of_votes(newAlert.getNumber_of_votes());
+        this.setImage(newAlert.getImage());
 
         User user = userRepository
                 .findById(newAlert.getUserId())
-                .orElseThrow(() -> new UserNotFoundException(id.toString()));
+                .orElseThrow(() -> new UserNotFoundException(newAlert.getUserId().toString()));
         this.setUser(user);
 
         AlertType alertType = alertTypeRepository
                 .findById(newAlert.getAlertTypeId())
-                .orElseThrow(() -> new AlertTypeNotFoundException(id.toString()));
+                .orElseThrow(() -> new AlertTypeNotFoundException(newAlert.getUserId().toString()));
         this.setAlertType(alertType);
     }
 

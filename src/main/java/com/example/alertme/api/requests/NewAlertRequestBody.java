@@ -1,7 +1,9 @@
 package com.example.alertme.api.requests;
 
+import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
@@ -17,10 +19,13 @@ public class NewAlertRequestBody {
     @Temporal(TemporalType.DATE)
     private Date expire_date;
 
+    @Lob
+    private byte[] image;
+
     public NewAlertRequestBody() {
     }
 
-    public NewAlertRequestBody(Long userId, Long alertTypeId, String title, String description, int number_of_votes, int latitude, int longitude, Date expire_date) {
+    public NewAlertRequestBody(Long userId, Long alertTypeId, String title, String description, int number_of_votes, int latitude, int longitude, Date expire_date, byte[] image) {
         this.userId = userId;
         this.alertTypeId = alertTypeId;
         this.title = title;
@@ -29,6 +34,7 @@ public class NewAlertRequestBody {
         this.latitude = latitude;
         this.longitude = longitude;
         this.expire_date = expire_date;
+        this.image = image;
     }
 
     public Long getUserId() {
@@ -95,17 +101,27 @@ public class NewAlertRequestBody {
         this.expire_date = expire_date;
     }
 
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof NewAlertRequestBody)) return false;
         NewAlertRequestBody that = (NewAlertRequestBody) o;
-        return number_of_votes == that.number_of_votes && latitude == that.latitude && longitude == that.longitude && Objects.equals(userId, that.userId) && Objects.equals(alertTypeId, that.alertTypeId) && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(expire_date, that.expire_date);
+        return number_of_votes == that.number_of_votes && latitude == that.latitude && longitude == that.longitude && Objects.equals(userId, that.userId) && Objects.equals(alertTypeId, that.alertTypeId) && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(expire_date, that.expire_date) && Arrays.equals(image, that.image);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, alertTypeId, title, description, number_of_votes, latitude, longitude, expire_date);
+        int result = Objects.hash(userId, alertTypeId, title, description, number_of_votes, latitude, longitude, expire_date);
+        result = 31 * result + Arrays.hashCode(image);
+        return result;
     }
 
     @Override
@@ -116,9 +132,10 @@ public class NewAlertRequestBody {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", number_of_votes=" + number_of_votes +
-                ", coordinate_x=" + latitude +
-                ", coordinate_y=" + longitude +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
                 ", expire_date=" + expire_date +
+                ", image=" + Arrays.toString(image) +
                 '}';
     }
 }
