@@ -33,8 +33,8 @@ public class Alert {
     private String title;
     private String description;
     private int number_of_votes;
-    private int latitude;
-    private int longitude;
+    private double latitude;
+    private double longitude;
 
     @Lob
     private byte[] image;
@@ -42,7 +42,7 @@ public class Alert {
     public Alert() {
     }
 
-    public Alert(Long id, User user, Date expire_date, AlertType alertType, String title, String description, int number_of_votes, int latitude, int longitude, byte[] image) {
+    public Alert(Long id, User user, Date expire_date, AlertType alertType, String title, String description, int number_of_votes, double latitude, double longitude, byte[] image) {
         this.id = id;
         this.user = user;
         this.expire_date = expire_date;
@@ -111,19 +111,19 @@ public class Alert {
         this.number_of_votes = number_of_votes;
     }
 
-    public int getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public int getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

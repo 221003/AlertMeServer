@@ -13,8 +13,8 @@ public class NewAlertRequestBody {
     private String title;
     private String description;
     private int number_of_votes;
-    private int latitude;
-    private int longitude;
+    private double latitude;
+    private double longitude;
 
     @Temporal(TemporalType.DATE)
     private Date expire_date;
@@ -25,7 +25,7 @@ public class NewAlertRequestBody {
     public NewAlertRequestBody() {
     }
 
-    public NewAlertRequestBody(Long userId, Long alertTypeId, String title, String description, int number_of_votes, int latitude, int longitude, Date expire_date, byte[] image) {
+    public NewAlertRequestBody(Long userId, Long alertTypeId, String title, String description, int number_of_votes, double latitude, double longitude, Date expire_date, byte[] image) {
         this.userId = userId;
         this.alertTypeId = alertTypeId;
         this.title = title;
@@ -77,19 +77,19 @@ public class NewAlertRequestBody {
         this.number_of_votes = number_of_votes;
     }
 
-    public int getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public int getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
