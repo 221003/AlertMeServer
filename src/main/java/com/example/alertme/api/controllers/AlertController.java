@@ -14,6 +14,7 @@ import com.example.alertme.api.repositories.AlertRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -37,7 +38,7 @@ public class AlertController {
 
             return ResponseEntity.ok(new SuccessResponse(alerts));
         } catch (Exception th) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
         }
 
     }
@@ -52,7 +53,7 @@ public class AlertController {
         } catch (AlertNotFoundException th) {
             return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
         } catch (Exception th) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
         }
     }
 
@@ -74,7 +75,7 @@ public class AlertController {
         } catch (AlertNotFoundException th) {
             return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
         } catch (Exception th) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
         }
     }
 
@@ -91,7 +92,32 @@ public class AlertController {
         } catch (UserNotFoundException th) {
             return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
         } catch (Exception th) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
         }
+    }
+
+    @GetMapping("/latitude/{latitude}/longitude/{longitude}/accepted-distance/{distance}")
+    ResponseEntity<Response> getByLocation(@PathVariable Double latitude, @PathVariable Double longitude, @PathVariable Double distance) {
+        try {
+            List<Alert> alerts = repository.findAll();
+
+            var result = new ArrayList<Alert>();
+
+            for (Alert alert: alerts) {
+
+                double ac = Math.abs(alert.getLatitude() - latitude);
+                double cb = Math.abs(alert.getLongitude() - longitude);
+                double dist = Math.hypot(ac, cb);
+
+                if (dist <= distance) {
+                    result.add(alert);
+                }
+            }
+
+            return ResponseEntity.ok(new SuccessResponse(result));
+        } catch (Exception th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
+        }
+
     }
 }
