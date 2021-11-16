@@ -30,7 +30,7 @@ public class AlertTypeController {
 
             return ResponseEntity.ok(new SuccessResponse(alertTypes));
         } catch (Exception th) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
         }
 
     }
@@ -45,7 +45,7 @@ public class AlertTypeController {
         } catch (AlertTypeNotFoundException th) {
             return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
         } catch (Exception th) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
         }
     }
 
@@ -59,7 +59,7 @@ public class AlertTypeController {
 
             return ResponseEntity.ok(new SuccessResponse(alertType));
         } catch (Exception th) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
         }
     }
 
@@ -78,7 +78,7 @@ public class AlertTypeController {
         } catch (AlertTypeNotFoundException th) {
             return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
         } catch (Exception th) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
         }
     }
 

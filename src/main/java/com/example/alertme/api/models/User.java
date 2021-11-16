@@ -11,6 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name="\"AppUsers\"")
+@JsonIgnoreProperties("alerts")
 public class User {
     private @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
