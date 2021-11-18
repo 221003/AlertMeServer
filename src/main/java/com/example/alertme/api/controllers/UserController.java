@@ -116,6 +116,9 @@ public class UserController {
                 throw new WrongPasswordException();
             }
 
+            user.setToken(loginRequestBody.getToken());
+            repository.save(user);
+
             return ResponseEntity.ok(new SuccessResponse(user));
         } catch (UserNotFoundException th) {
             return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));

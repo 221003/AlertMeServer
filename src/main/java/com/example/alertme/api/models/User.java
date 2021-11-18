@@ -21,6 +21,7 @@ public class User {
     private String login;
     private String password_hash;
     private String email;
+    private String token;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("user")
@@ -29,13 +30,14 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String first_name, String last_name, String login, String password_hash, String email, List<Alert> alerts) {
+    public User(Long id, String first_name, String last_name, String login, String password_hash, String email, String token, List<Alert> alerts) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.login = login;
         this.password_hash = password_hash;
         this.email = email;
+        this.token = token;
         this.alerts = alerts;
     }
 
@@ -95,17 +97,25 @@ public class User {
         this.alerts = alerts;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(first_name, user.first_name) && Objects.equals(last_name, user.last_name) && Objects.equals(login, user.login) && Objects.equals(password_hash, user.password_hash) && Objects.equals(email, user.email) && Objects.equals(alerts, user.alerts);
+        return Objects.equals(id, user.id) && Objects.equals(first_name, user.first_name) && Objects.equals(last_name, user.last_name) && Objects.equals(login, user.login) && Objects.equals(password_hash, user.password_hash) && Objects.equals(email, user.email) && Objects.equals(token, user.token) && Objects.equals(alerts, user.alerts);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, first_name, last_name, login, password_hash, email, alerts);
+        return Objects.hash(id, first_name, last_name, login, password_hash, email, token, alerts);
     }
 
     @Override
@@ -117,6 +127,7 @@ public class User {
                 ", login='" + login + '\'' +
                 ", password_hash='" + password_hash + '\'' +
                 ", email='" + email + '\'' +
+                ", token='" + token + '\'' +
                 ", alerts=" + alerts +
                 '}';
     }
