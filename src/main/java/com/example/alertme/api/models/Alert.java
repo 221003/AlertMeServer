@@ -166,6 +166,20 @@ public class Alert {
                 '}';
     }
 
+    public String getShortDescription(){
+        return "Alert{" +
+                "id=" + id +
+                ", user_id=" + user.getId() +
+                ", expire_date=" + expire_date +
+                ", alertType=" + alertType.getName() +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", number_of_votes=" + number_of_votes +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
+    }
+
     public void setFromRequestBody(UserRepository userRepository, AlertTypeRepository alertTypeRepository, NewAlertRequestBody newAlert) throws UserNotFoundException, AlertTypeNotFoundException {
         this.setTitle(newAlert.getTitle());
         this.setDescription(newAlert.getDescription());

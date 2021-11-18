@@ -68,4 +68,13 @@ public class Vote {
                 ", is_upped=" + is_upped +
                 '}';
     }
+
+    public String getShortDescription(){
+        return "Vote{" +
+                "id=" + id +
+                ", alert_id=" + alert.getId() +
+                ", user_id=" + user.getId() +
+                ", is_upped=" + is_upped +
+                '}';
+    }
 }
