@@ -23,7 +23,8 @@ public class Alert {
     private User user;
 
     @Temporal(TemporalType.DATE)
-    private Date expire_date;
+    @Column(name = "expire_date")
+    private Date expireDate;
 
     @ManyToOne(targetEntity = AlertType.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "alert_type_id")
@@ -32,7 +33,8 @@ public class Alert {
 
     private String title;
     private String description;
-    private int number_of_votes;
+    @Column(name = "number_of_votes")
+    private int numberOfVotes;
     private double latitude;
     private double longitude;
 
@@ -45,11 +47,11 @@ public class Alert {
     public Alert(Long id, User user, Date expire_date, AlertType alertType, String title, String description, int number_of_votes, double latitude, double longitude, byte[] image) {
         this.id = id;
         this.user = user;
-        this.expire_date = expire_date;
+        this.expireDate = expire_date;
         this.alertType = alertType;
         this.title = title;
         this.description = description;
-        this.number_of_votes = number_of_votes;
+        this.numberOfVotes = number_of_votes;
         this.latitude = latitude;
         this.longitude = longitude;
         this.image = image;
@@ -72,11 +74,11 @@ public class Alert {
     }
 
     public Date getExpire_date() {
-        return expire_date;
+        return expireDate;
     }
 
     public void setExpire_date(Date expire_date) {
-        this.expire_date = expire_date;
+        this.expireDate = expire_date;
     }
 
     public AlertType getAlertType() {
@@ -104,11 +106,11 @@ public class Alert {
     }
 
     public int getNumber_of_votes() {
-        return number_of_votes;
+        return numberOfVotes;
     }
 
     public void setNumber_of_votes(int number_of_votes) {
-        this.number_of_votes = number_of_votes;
+        this.numberOfVotes = number_of_votes;
     }
 
     public double getLatitude() {
@@ -140,12 +142,12 @@ public class Alert {
         if (this == o) return true;
         if (!(o instanceof Alert)) return false;
         Alert alert = (Alert) o;
-        return number_of_votes == alert.number_of_votes && latitude == alert.latitude && longitude == alert.longitude && Objects.equals(id, alert.id) && Objects.equals(user, alert.user) && Objects.equals(expire_date, alert.expire_date) && Objects.equals(alertType, alert.alertType) && Objects.equals(title, alert.title) && Objects.equals(description, alert.description) && Arrays.equals(image, alert.image);
+        return numberOfVotes == alert.numberOfVotes && latitude == alert.latitude && longitude == alert.longitude && Objects.equals(id, alert.id) && Objects.equals(user, alert.user) && Objects.equals(expireDate, alert.expireDate) && Objects.equals(alertType, alert.alertType) && Objects.equals(title, alert.title) && Objects.equals(description, alert.description) && Arrays.equals(image, alert.image);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, user, expire_date, alertType, title, description, number_of_votes, latitude, longitude);
+        int result = Objects.hash(id, user, expireDate, alertType, title, description, numberOfVotes, latitude, longitude);
         result = 31 * result + Arrays.hashCode(image);
         return result;
     }
@@ -155,11 +157,11 @@ public class Alert {
         return "Alert{" +
                 "id=" + id +
                 ", user=" + user +
-                ", expire_date=" + expire_date +
+                ", expire_date=" + expireDate +
                 ", alertType=" + alertType +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", number_of_votes=" + number_of_votes +
+                ", number_of_votes=" + numberOfVotes +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", image=" + Arrays.toString(image) +
@@ -170,11 +172,11 @@ public class Alert {
         return "Alert{" +
                 "id=" + id +
                 ", user_id=" + user.getId() +
-                ", expire_date=" + expire_date +
+                ", expire_date=" + expireDate +
                 ", alertType=" + alertType.getName() +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", number_of_votes=" + number_of_votes +
+                ", number_of_votes=" + numberOfVotes +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 '}';

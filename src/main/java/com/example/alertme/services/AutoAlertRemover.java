@@ -25,16 +25,13 @@ public class AutoAlertRemover {
 
 
     @Scheduled(fixedRate = EVERY_HOUR)
-    public void removedBasedOnVotes() {
-        List<Alert> alerts = alertRepository.findAll();
+    public void removeAlertsBasedOnNegativeVotes() {
+        List<Alert> alerts = alertRepository.findByNumberOfVotesLessThanEqual(LOWER_LIMIT_VOTES);
         for (Alert alert : alerts) {
-            if (alert.getNumber_of_votes() < LOWER_LIMIT_VOTES) {
-                removeAllVotesAssignedToAlert(alert.getId());
-                LOGGER.info("Auto removing an alert based on a negative votes: "
-                        + alert.getNumber_of_votes() + " votes");
-                LOGGER.info("Removed alert details: " + alert.getShortDescription());
-                alertRepository.delete(alert);
-            }
+            removeAllVotesAssignedToAlert(alert.getId());
+            LOGGER.info("Auto removing an alert based on negative votes: " + alert.getNumber_of_votes());
+            LOGGER.info("Removed alert details: " + alert.getShortDescription());
+            alertRepository.delete(alert);
         }
     }
 
