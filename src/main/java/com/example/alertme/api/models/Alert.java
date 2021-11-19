@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -182,12 +183,22 @@ public class Alert {
                 '}';
     }
 
+
+    private Date generateExpirationDate(){
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, 21);
+        return calendar.getTime();
+    }
+
+
     public void setFromRequestBody(UserRepository userRepository, AlertTypeRepository alertTypeRepository, NewAlertRequestBody newAlert) throws UserNotFoundException, AlertTypeNotFoundException {
         this.setTitle(newAlert.getTitle());
         this.setDescription(newAlert.getDescription());
         this.setLatitude(newAlert.getLatitude());
         this.setLongitude(newAlert.getLongitude());
-        this.setExpire_date(newAlert.getExpire_date());
+        this.setExpire_date(generateExpirationDate());
         this.setNumber_of_votes(newAlert.getNumber_of_votes());
         this.setImage(newAlert.getImage());
 

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -21,15 +22,30 @@ public class AutoAlertRemover {
 
     private static final Logger LOGGER = Logger.getLogger(AutoAlertRemover.class.getName());
     private static final int LOWER_LIMIT_VOTES = -10;
-    private static final int EVERY_HOUR = 1000 * 3600;
+    private static final int EVERY_HOUR = 1000 * 30;
+    private static final String TIME_2_30_AM = "0 30 2 * * *";
 
 
     @Scheduled(fixedRate = EVERY_HOUR)
     public void removeAlertsBasedOnNegativeVotes() {
+        LOGGER.info("Executing job for auto removing alerts based on negative number of votes");
         List<Alert> alerts = alertRepository.findByNumberOfVotesLessThanEqual(LOWER_LIMIT_VOTES);
         for (Alert alert : alerts) {
             removeAllVotesAssignedToAlert(alert.getId());
             LOGGER.info("Auto removing an alert based on negative votes: " + alert.getNumber_of_votes());
+            LOGGER.info("Removed alert details: " + alert.getShortDescription());
+            alertRepository.delete(alert);
+        }
+    }
+
+    // job executed every day at 2:30 AM
+    @Scheduled(cron = TIME_2_30_AM)
+    public void removeAlertsBasedOnExpirationDate() {
+        LOGGER.info("Executing job for auto removing alerts based on expiration date");
+        List<Alert> alerts = alertRepository.findByExpireDateLessThanEqual(new Date());
+        for (Alert alert : alerts) {
+            removeAllVotesAssignedToAlert(alert.getId());
+            LOGGER.info("Auto removing an alert based on expiration date: " + alert.getExpire_date());
             LOGGER.info("Removed alert details: " + alert.getShortDescription());
             alertRepository.delete(alert);
         }
