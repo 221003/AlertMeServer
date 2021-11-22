@@ -22,7 +22,7 @@ public class AutoAlertRemover {
 
     private static final Logger LOGGER = Logger.getLogger(AutoAlertRemover.class.getName());
     private static final int LOWER_LIMIT_VOTES = -10;
-    private static final int EVERY_HOUR = 1000 * 30;
+    private static final int EVERY_HOUR = 1000 * 3600;
     private static final String TIME_2_30_AM = "0 30 2 * * *";
 
 
