@@ -97,7 +97,7 @@ public class AlertController {
     }
 
     @GetMapping("/latitude/{latitude}/longitude/{longitude}/accepted-distance/{distance}")
-    ResponseEntity<Response> getByLocation(@PathVariable Double latitude, @PathVariable Double longitude, @PathVariable Double distance) {
+    ResponseEntity<Response> getByLocation(@PathVariable Double latitude, @PathVariable Double longitude, @PathVariable("distance") Double distanceInMeters) {
         try {
             List<Alert> alerts = repository.findAll();
 
@@ -105,11 +105,9 @@ public class AlertController {
 
             for (Alert alert: alerts) {
 
-                double ac = Math.abs(alert.getLatitude() - latitude);
-                double cb = Math.abs(alert.getLongitude() - longitude);
-                double dist = Math.hypot(ac, cb);
+                double dist = org.apache.lucene.util.SloppyMath.haversinMeters(latitude, longitude, alert.getLatitude(), alert.getLongitude());
 
-                if (dist <= distance) {
+                if (dist <= distanceInMeters) {
                     result.add(alert);
                 }
             }
