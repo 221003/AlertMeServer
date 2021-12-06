@@ -118,4 +118,17 @@ public class AlertController {
         }
 
     }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<Response> deleteUserAlert(@PathVariable Long id) {
+        try {
+            repository.deleteById(id);
+
+            return ResponseEntity.ok(new SuccessResponse(null));
+        } catch (UserNotFoundException th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
+        } catch (Exception th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
+        }
+    }
 }

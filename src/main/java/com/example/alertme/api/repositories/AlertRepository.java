@@ -13,5 +13,5 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
     List<Alert> findByUser_id(Long user_id);
     List<Alert> findByNumberOfVotesLessThanEqual(int numberOfVotes);
     List<Alert> findByExpireDateLessThanEqual(Date date);
-
+    void deleteById(Long Id);
 }
