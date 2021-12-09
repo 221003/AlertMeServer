@@ -58,6 +58,5 @@ public class AutoAlertRemover {
             LOGGER.info("Removed vote details: " + vote.getShortDescription());
             voteRepository.delete(vote);
         }
-        votes.forEach(vote -> voteRepository.delete(vote));
     }
 }

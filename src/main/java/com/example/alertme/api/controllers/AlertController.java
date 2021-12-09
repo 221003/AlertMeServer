@@ -1,8 +1,10 @@
 package com.example.alertme.api.controllers;
 
 import com.example.alertme.api.exceptions.AlertTypeNotFoundException;
+import com.example.alertme.api.models.Vote;
 import com.example.alertme.api.repositories.AlertTypeRepository;
 import com.example.alertme.api.repositories.UserRepository;
+import com.example.alertme.api.repositories.VoteRepository;
 import com.example.alertme.api.requests.NewAlertRequestBody;
 import com.example.alertme.api.responses.ErrorResponse;
 import com.example.alertme.api.responses.Response;
@@ -21,20 +23,23 @@ import java.util.List;
 @RequestMapping("/api/alerts")
 public class AlertController {
 
-    private final AlertRepository repository;
+    private final AlertRepository alertRepository;
     private final UserRepository userRepository;
     private final AlertTypeRepository alertTypeRepository;
+    private final VoteRepository voteRepository;
 
-    public AlertController(AlertRepository repository, UserRepository userRepository, AlertTypeRepository alertTypeRepository) {
-        this.repository = repository;
+    public AlertController(AlertRepository repository, UserRepository userRepository,
+                           AlertTypeRepository alertTypeRepository, VoteRepository voteRepository) {
+        this.alertRepository = repository;
         this.userRepository = userRepository;
         this.alertTypeRepository = alertTypeRepository;
+        this.voteRepository = voteRepository;
     }
 
     @GetMapping("")
     ResponseEntity<Response> all() {
         try {
-            List<Alert> alerts = repository.findAll();
+            List<Alert> alerts = alertRepository.findAll();
 
             return ResponseEntity.ok(new SuccessResponse(alerts));
         } catch (Exception th) {
@@ -46,7 +51,7 @@ public class AlertController {
     @GetMapping("/{id}")
     ResponseEntity<Response> one(@PathVariable Long id) {
         try {
-            Alert alert = repository.findById(id)
+            Alert alert = alertRepository.findById(id)
                     .orElseThrow(() -> new AlertNotFoundException(id.toString()));
 
             return ResponseEntity.ok(new SuccessResponse(alert));
@@ -60,10 +65,10 @@ public class AlertController {
     @PutMapping("/{id}")
     ResponseEntity<Response> update(@RequestBody NewAlertRequestBody newAlert, @PathVariable Long id) {
         try {
-            Alert updatedAlert = repository.findById(id)
+            Alert updatedAlert = alertRepository.findById(id)
                     .map(alert -> {
                         alert.setFromRequestBody(userRepository, alertTypeRepository, newAlert);
-                        return repository.save(alert);
+                        return alertRepository.save(alert);
                     })
                     .orElseThrow(() -> new AlertNotFoundException(id.toString()));
 
@@ -84,7 +89,7 @@ public class AlertController {
         try {
             Alert alert = new Alert();
             alert.setFromRequestBody(userRepository, alertTypeRepository, newAlert);
-            repository.save(alert);
+            alertRepository.save(alert);
 
             return ResponseEntity.ok(new SuccessResponse(alert));
         } catch (AlertTypeNotFoundException th) {
@@ -99,11 +104,11 @@ public class AlertController {
     @GetMapping("/latitude/{latitude}/longitude/{longitude}/accepted-distance/{distance}")
     ResponseEntity<Response> getByLocation(@PathVariable Double latitude, @PathVariable Double longitude, @PathVariable("distance") Double distanceInMeters) {
         try {
-            List<Alert> alerts = repository.findAll();
+            List<Alert> alerts = alertRepository.findAll();
 
             var result = new ArrayList<Alert>();
 
-            for (Alert alert: alerts) {
+            for (Alert alert : alerts) {
 
                 double dist = org.apache.lucene.util.SloppyMath.haversinMeters(latitude, longitude, alert.getLatitude(), alert.getLongitude());
 
@@ -122,8 +127,9 @@ public class AlertController {
     @DeleteMapping("/{id}")
     ResponseEntity<Response> deleteUserAlert(@PathVariable Long id) {
         try {
-            repository.deleteById(id);
-
+            List<Vote> votes = voteRepository.findByAlertId(id);
+            votes.forEach(voteRepository::delete);
+            alertRepository.deleteById(id);
             return ResponseEntity.ok(new SuccessResponse(null));
         } catch (UserNotFoundException th) {
             return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
