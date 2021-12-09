@@ -23,7 +23,7 @@ public class AutoAlertRemover {
     private static final Logger LOGGER = Logger.getLogger(AutoAlertRemover.class.getName());
     private static final int LOWER_LIMIT_VOTES = -10;
     private static final int EVERY_HOUR = 1000 * 3600;
-    private static final String TIME_2_30_AM = "0 30 2 * * *";
+    private static final String MIDNIGHT = "0 0 0 * * *";
 
 
     @Scheduled(fixedRate = EVERY_HOUR)
@@ -38,8 +38,7 @@ public class AutoAlertRemover {
         }
     }
 
-    // job executed every day at 2:30 AM
-    @Scheduled(cron = TIME_2_30_AM)
+    @Scheduled(cron = MIDNIGHT)
     public void removeAlertsBasedOnExpirationDate() {
         LOGGER.info("Executing job for auto removing alerts based on expiration date");
         List<Alert> alerts = alertRepository.findByExpireDateLessThanEqual(new Date());
