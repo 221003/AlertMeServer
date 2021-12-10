@@ -143,7 +143,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}/change-password")
+    @PutMapping("/{id}/change-password")
     ResponseEntity<Response> changePassword(@RequestBody ChangePasswordRequest changePasswordRequestBody, @PathVariable Long id) {
         try {
             User updatedUser = repository.findById(id)
@@ -154,6 +154,29 @@ public class UserController {
                         }
 
                         user.setPassword_hash(passwordEncoder.encode(changePasswordRequestBody.getNew_password()));
+                        return repository.save(user);
+                    })
+                    .orElseThrow(() -> new UserNotFoundException(id.toString()));
+
+            return ResponseEntity.ok(new SuccessResponse(updatedUser));
+        } catch (UserNotFoundException th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
+        } catch (WrongPasswordException th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), th.getErrorCode()));
+        } catch (Exception th) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(th.getMessage(), 100));
+        }
+    }
+
+
+    @PutMapping("/{id}/switch-notification")
+    ResponseEntity<Response> switchUserNotification(@PathVariable Long id) {
+        try {
+            User updatedUser = repository.findById(id)
+                    .map(user -> {
+
+                        user.setTurn_off_notifications(!user.getTurn_off_notifications());
+
                         return repository.save(user);
                     })
                     .orElseThrow(() -> new UserNotFoundException(id.toString()));

@@ -22,6 +22,7 @@ public class User {
     private String password_hash;
     private String email;
     private String token;
+    private boolean turn_off_notifications = false;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("user")
@@ -103,6 +104,14 @@ public class User {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public void setTurn_off_notifications(Boolean turn_off_notifications) {
+        this.turn_off_notifications = turn_off_notifications;
+    }
+
+    public boolean getTurn_off_notifications() {
+        return this.turn_off_notifications;
     }
 
     @Override
